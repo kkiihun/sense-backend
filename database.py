@@ -9,7 +9,7 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 #  종속석 주입용
-def get_db();
+def get_db():
     db = SessionLocal()
     try:
         yield db
