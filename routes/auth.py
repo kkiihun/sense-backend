@@ -7,6 +7,7 @@ import models
 import jwt
 import os
 from datetime import datetime, timedelta
+from schemas.user import UserCreate, UserLogin, UserOut
 
 router = APIRouter(
     prefix="/auth",
@@ -31,7 +32,7 @@ class UserLogin(BaseModel):
     password: str
 
 
-@router.post("/register")
+@router.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
@@ -42,7 +43,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"msg": "회원가입 완료", "user_id": new_user.id}
+    return new_user # ORM object -> UserOut으로 자동 변환됨
 
 
 @router.post("/login")
