@@ -1,6 +1,6 @@
 # sample_loader.py
 from database import SessionLocal
-from models import RecordModel
+from models import SenseData
 from datetime import datetime, timedelta
 import random
 
@@ -8,7 +8,7 @@ def load_sample_data():
     db = SessionLocal()
 
     # 이미 있으면 생략
-    if db.query(RecordModel).count() > 0:
+    if db.query(SenseData).count() > 0:
         print("샘플 데이터 이미 존재")
         return
 
@@ -34,7 +34,7 @@ def load_sample_data():
     for i in range(50):
         sense_type = random.choice(list(sense_types.keys()))
         keyword = random.choice(sense_types[sense_type])
-        record = RecordModel(
+        record = SenseData(
             date=(now - timedelta(days=i)).strftime("%Y-%m-%dT%H:%M"),
             location=random.choice(locations),
             sense_type=sense_type,

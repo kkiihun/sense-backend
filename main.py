@@ -1,17 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from database import SessionLocal
 from models import Base, SenseData
-from database import engine, SessionLocal
-from sample_loader import load_sample_data
-from logging_config import logger 
+from database import engine
+import traceback
 
 app = FastAPI()
 
 # ✅ CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 필요시 프론트엔드 주소로 제한 가능
+    allow_origins=["*"],  # 필요한 경우 프론트 주소로 변경
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,62 +21,53 @@ app.add_middleware(
 # ✅ DB 테이블 생성
 Base.metadata.create_all(bind=engine)
 
-# ✅ 샘플 데이터 로드
-@app.on_event("startup")
-def startup_event():
-    logger.info("서버 시작됨")
-    try:
-        load_sample_data()
-        logger.info("샘플 데이터 로드 완료")
-    except Exception as e:
-        logger.error(f"샘플 데이터 로드 중 오류 발생: {e}")
-    
-@app.get("/")
-def root():
-    logger.info("루트 페이지 접근됨")
-    return {"message": "FastAPI 작동 중"}
-
-# ✅ 레코드 조회
-@app.get("/records")
-def get_records():
-    db = SessionLocal()
-    try:
-        records = db.query(SenseData).all()     
-        return [
-        {
-            "id": r.id,
-            "date": r.date,
-            "location": r.location,
-            "sense_type": r.sense_type,
-            "keyword": r.keyword,
-            "emotion_score": r.emotion_score,
-            "description": r.description
-        }
-        for r in records
-    ]
-    finally:
-        db.close()
-
-# ✅ 업로드용 Pydantic 모델
+# ✅ 입력 모델 정의
 class SenseInput(BaseModel):
     date: str
     location: str
     sense_type: str
     keyword: str
-    emotion_score: int
+    emotion_score: float
     description: str
 
-# ✅ 업로드 API
-@app.post("/upload")
-def upload_record(data: SenseInput):
+# ✅ 기록 추가 API
+@app.post("/records")
+def create_record(data: SenseInput):
     db = SessionLocal()
     try:
         record = SenseData(**data.dict())
         db.add(record)
         db.commit()
         db.refresh(record)
-        return {"message": "업로드 성공", "id": record.id}    
+        return {"message": "등록 완료", "id": record.id}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content={"error": str(e)}, status_code=500)
     finally:
         db.close()
-    
+
+# ✅ 기록 조회 API
+@app.get("/records")
+def get_records():
+    db = SessionLocal()
+    try:
+        records = db.query(SenseData).all()
+        return [
+            {
+                "id": r.id,
+                "date": r.date or "",
+                "location": r.location or "",
+                "sense_type": r.sense_type or "",
+                "keyword": r.keyword or "",
+                "emotion_score": float(r.emotion_score or 0),  # 반드시 float!
+                "description": r.description or ""
+            }
+            for r in records
+        ]
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    finally:
+        db.close()
 

@@ -1,28 +1,26 @@
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *.sqlite3
-*.db
 *.log
+
+# 가상환경
+env/
+.venv/
+
+# 환경변수
 .env
-venv/
+.env.*
 
-# Node.js
-node_modules/
-.next/
-out/
-*.log
-
-# VSCode
+# IDE
 .vscode/
-.DS_Store
+.idea/
 
 # OS
-Thumbs.db
-ehthumbs.db
+.DS_Store
 
-# Others
-*.swp
+# 테스트/툴
+.cache/
 *.bak
-
-logs/
