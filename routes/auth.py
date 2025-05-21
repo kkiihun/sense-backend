@@ -8,6 +8,7 @@ import jwt
 import os
 from datetime import datetime, timedelta
 from schemas.user import UserCreate, UserLogin, UserOut
+from dependencies.security import get_current_user
 
 router = APIRouter(
     prefix="/auth",
@@ -58,3 +59,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     }
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
+
+@router.get("/me", response_model=UserOut)
+def read_current_user(current_user: UserOut = Dpends(get_current_user));
+    return get_current_user
