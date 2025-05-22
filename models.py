@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# 기존 Sensedata 모델 그대로 유지
 class SenseData(Base):
     __tablename__ = "sensedata"
 
@@ -13,3 +14,12 @@ class SenseData(Base):
     keyword = Column(String, nullable=False)
     emotion_score = Column(Float, nullable=False)
     description = Column(String, nullable=True)
+
+# User model
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    is_admin = Column(Integer, default=0)   # 0: 일반 유저, 1: 관리자
