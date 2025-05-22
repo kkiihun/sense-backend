@@ -7,6 +7,7 @@ from database import get_db
 from schemas.user import UserCreate, UserLogin, UserOut
 from dependencies.security import get_current_user
 from datetime import datetime, timedelta
+import models
 import jwt
 import os
 

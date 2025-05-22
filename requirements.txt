@@ -5,3 +5,4 @@ PyJWT>=2.0.0
 email-validator
 passlib[bcrypt]
 bcrypt==3.2.2
+python-multipart
