@@ -6,8 +6,14 @@ from database import SessionLocal
 from models import Base, SenseData
 from database import engine
 import traceback
+from routes import auth, admin
 
 app = FastAPI()
+
+# 라우터 등록
+app.include_router(auth.router) # 꼭 있어야 함
+app.include_router(admin.router)
+
 
 # ✅ CORS 설정
 app.add_middleware(
