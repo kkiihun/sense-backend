@@ -18,7 +18,7 @@ app.include_router(admin.router)
 # ✅ CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 필요한 경우 프론트 주소로 변경
+    allow_origins=["http://192.168.1.208:3000"],  # 필요한 경우 프론트 주소로 변경
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -5,7 +5,7 @@ Base = declarative_base()
 
 # 기존 Sensedata 모델 그대로 유지
 class SenseData(Base):
-    __tablename__ = "sensedata"
+    __tablename__ = "records"
 
     id = Column(Integer, primary_key=True, index=True)
     date = Column(String, nullable=False)
